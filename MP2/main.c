@@ -1,34 +1,29 @@
 #include <stdio.h>
-#include <math.h>
+
+extern int acceleration(double Vi, double Vf, double T);
 
 int main() {
     int rows;
     printf("Enter number of rows: ");
-    if (scanf_s("%d", &rows) != 1 || rows <= 0 || rows > 100) {
-        printf("Invalid input.\n");
+    if (scanf_s("%d", &rows) != 1 || rows <= 0) {
+        printf("Invalid row count.\n");
         return 1;
     }
 
-    double input[100][3];
+    double input[100][3];  // Supports up to 100 rows
+    printf("Enter Vi, Vf, and T for each row (e.g. 0.0, 62.5, 10.1):\n");
 
     for (int i = 0; i < rows; i++) {
-        printf("Enter Vi, Vf, T for row %d (comma-separated): ", i + 1);
         if (scanf_s("%lf, %lf, %lf", &input[i][0], &input[i][1], &input[i][2]) != 3) {
-            printf("Invalid input format.\n");
+            printf("Invalid input at row %d.\n", i + 1);
             return 1;
         }
     }
 
-    printf("\nOutput (Acceleration in m/s^2, rounded to int):\n");
+    printf("\nResults:\n");
     for (int i = 0; i < rows; i++) {
-        double Vi = input[i][0] * 1000.0 / 3600.0;
-        double Vf = input[i][1] * 1000.0 / 3600.0;
-        double T = input[i][2];
-
-        double acceleration = (Vf - Vi) / T;
-        int rounded = (int)round(acceleration);
-
-        printf("%d\n", rounded);
+        int result = acceleration(input[i][0], input[i][1], input[i][2]);
+        printf("Row %d: %d m/s^2\n", i + 1, result);
     }
 
     return 0;
