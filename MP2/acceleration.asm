@@ -1,22 +1,19 @@
+section .data
+    const_1000: dq 1000.0
+    const_3600: dq 3600.0
+    
 section .text
+    bits 64
+    default rel
     global acceleration
-
-const_1000: dq 1000.0
-const_3600: dq 3600.0
-
-; void acceleration(double* input, int* output, int rows)
-; Windows x64: RCX, RDX, R8, R9
+    extern printf, scanf
 
 acceleration:
-    ; rcx = input pointer (double*)
-    ; rdx = output pointer (int*)
-    ; r8  = number of rows
-
     push rbp
     mov rbp, rsp
     push rbx
 
-    xor r9, r9           ; r9 = i = 0 (loop counter)
+    xor r9, r9
     movsd xmm6, [rel const_1000]
     movsd xmm7, [rel const_3600]
 
@@ -25,12 +22,12 @@ acceleration:
     jge .done
 
     mov rax, r9
-    imul rax, 24         ; offset = row * 24 (3 doubles * 8)
+    imul rax, 24
 
     ; Load Vi, Vf, T
-    movsd xmm0, [rcx + rax]        ; Vi
-    movsd xmm1, [rcx + rax + 8]    ; Vf
-    movsd xmm2, [rcx + rax + 16]   ; T
+    movsd xmm0, [rcx + rax]
+    movsd xmm1, [rcx + rax + 8]
+    movsd xmm2, [rcx + rax + 16]
 
     ; Convert Vi from km/h to m/s
     movsd xmm3, xmm0
