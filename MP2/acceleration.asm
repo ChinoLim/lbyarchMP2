@@ -1,34 +1,59 @@
 section .text
     global acceleration
 
-; Constants stored in .text to avoid .data linkage issues
 const_1000: dq 1000.0
 const_3600: dq 3600.0
 
+; void acceleration(double* input, int* output, int rows)
+; Windows x64: RCX, RDX, R8, R9
+
 acceleration:
-    ; Inputs:
-    ;   xmm0 = Vi (km/h)
-    ;   xmm1 = Vf (km/h)
-    ;   xmm2 = T  (s)
+    ; rcx = input pointer (double*)
+    ; rdx = output pointer (int*)
+    ; r8  = number of rows
 
-    ; Load constants
-    movsd xmm3, [rel const_1000]
-    movsd xmm4, [rel const_3600]
+    push rbp
+    mov rbp, rsp
+    push rbx
 
-    ; Convert Vi from km/h to m/s: Vi * 1000 / 3600
-    mulsd xmm0, xmm3           ; xmm0 = Vi * 1000
-    divsd xmm0, xmm4           ; xmm0 = Vi_mps
+    xor r9, r9           ; r9 = i = 0 (loop counter)
+    movsd xmm6, [rel const_1000]
+    movsd xmm7, [rel const_3600]
 
-    ; Convert Vf from km/h to m/s: Vf * 1000 / 3600
-    movsd xmm5, xmm1           ; copy Vf to xmm5
-    mulsd xmm5, xmm3           ; xmm5 = Vf * 1000
-    divsd xmm5, xmm4           ; xmm5 = Vf_mps
+.loop:
+    cmp r9, r8
+    jge .done
 
-    ; Compute (Vf - Vi) / T
-    subsd xmm5, xmm0           ; xmm5 = Vf_mps - Vi_mps
-    divsd xmm5, xmm2           ; xmm5 = acceleration
+    mov rax, r9
+    imul rax, 24         ; offset = row * 24 (3 doubles * 8)
 
-    ; Convert double to int (round to nearest)
-    cvtsd2si eax, xmm5         ; return int result in eax
+    ; Load Vi, Vf, T
+    movsd xmm0, [rcx + rax]        ; Vi
+    movsd xmm1, [rcx + rax + 8]    ; Vf
+    movsd xmm2, [rcx + rax + 16]   ; T
 
+    ; Convert Vi from km/h to m/s
+    movsd xmm3, xmm0
+    mulsd xmm3, xmm6
+    divsd xmm3, xmm7
+
+    ; Convert Vf from km/h to m/s
+    movsd xmm4, xmm1
+    mulsd xmm4, xmm6
+    divsd xmm4, xmm7
+
+    ; Accel = (Vf - Vi) / T
+    subsd xmm4, xmm3
+    divsd xmm4, xmm2
+
+    ; Convert to int and store
+    cvtsd2si eax, xmm4
+    mov [rdx + r9*4], eax
+
+    inc r9
+    jmp .loop
+
+.done:
+    pop rbx
+    pop rbp
     ret
