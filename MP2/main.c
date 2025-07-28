@@ -5,13 +5,13 @@ extern void acceleration(double* input, int* output, int rows);
 int main() {
     int rows;
     printf("Enter number of rows: ");
-    if (scanf_s("%d", &rows) != 1 || rows <= 0 || rows > 100) {
+    if (scanf_s("%d", &rows) != 1 || rows <= 0 || rows > 10000) {
         printf("Invalid row count.\n");
         return 1;
     }
 
-    double input[100][3];  // Maximum of 100 rows
-    int output[100];
+    double input[10000][3];  // Maximum of 10000 rows
+    int output[10000];
 
     printf("Enter Vi, Vf, and T for each row (e.g. 0.0, 62.5, 10.1):\n");
 
