@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 extern void acceleration(double* input, int* output, int rows);
 
@@ -22,12 +23,17 @@ int main() {
         }
     }
 
+    long start = clock();
     acceleration(&input[0][0], output, rows);
 
     printf("\nResults:\n\n");
     for (int i = 0; i < rows; i++) {
         printf("Row %d: %d m/s^2\n", i + 1, output[i]);
     }
+    long end = clock();
+    double elapsed = ((double)(end - start) / CLOCKS_PER_SEC) * 1e3;
+
+    printf("Time Elapsed: %.2lf milliseconds\n", elapsed);
 
     return 0;
 }
