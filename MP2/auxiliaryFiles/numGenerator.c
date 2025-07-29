@@ -31,9 +31,9 @@ int main() {
 
     // Generate random numbers
     for (int i = 0; i < rows; i++) {
-        double v_initial = random_double(0.0, 500.0); //From 0 to 500
-        double v_final = random_double(0.0, 500.0); //From 0 to 500
-        double time = random_double(0.0001, 99.9999); //>0 to <100
+        double v_initial = random_double(0.0, 499.9999); //From 0 to <500
+        double v_final = random_double(v_initial, 500.0); //From v_initial to 500 --- always positively accelerating
+        double time = random_double(0.0001, 60); //>0 to 60
         
         fprintf(file, "\n%.2f, %.2f, %.2f", v_initial, v_final, time);
 

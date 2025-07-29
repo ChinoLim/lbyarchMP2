@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 int main(){
     int rows;
@@ -20,6 +21,7 @@ int main(){
         }
     }
     
+    long start = clock();
     for (int i = 0; i < rows; i++) {
         double vi = input[i][0];
         double vf = input[i][1];
@@ -37,6 +39,10 @@ int main(){
     for (int i = 0; i < rows; i++) {
         printf("Row %d: %.4lf m/s^2\n", i + 1, output[i]);
     }
+    long end = clock();
+    double elapsed = ((double)(end - start)/CLOCKS_PER_SEC) * 1e3;
+
+    printf("Time Elapsed: %.2lf milliseconds\n", elapsed);
 
     return 0;
 }
